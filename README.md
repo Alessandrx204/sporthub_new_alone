@@ -74,5 +74,6 @@ I test in `tests/` usano un database SQLite in memoria e non modificano `databas
 
 - [Consegne certe, ambiguità ed esempi esclusi](docs/consegne.md).
 - [Lezione 3: impatto, criteri, API, ERD e flusso](docs/lezione03.md).
+- [Lezione 4: specifica delle prenotazioni, ancora da implementare](docs/lezione04.md).
 
 Il setup aggiorna anche la vecchia tabella degli impianti senza cancellare i dati. Per gli impianti personalizzati preesistenti la durata iniziale è 60 minuti.

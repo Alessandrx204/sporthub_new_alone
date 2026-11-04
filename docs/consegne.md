@@ -29,4 +29,4 @@ I riferimenti sono pagine del PDF, non numeri stampati sulle slide. I materiali 
 
 ## Avanzamento
 
-In questo incremento si realizza soltanto L3. Le lezioni successive restano da affrontare.
+L3 implementata e verificata. L4: specifica funzionale delle prenotazioni in [lezione04.md](lezione04.md), con decisioni locali dichiarate e test pianificati. Le prenotazioni non sono ancora implementate; i capitoli successivi restano da affrontare.
