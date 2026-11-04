@@ -68,6 +68,8 @@ export default function FacilityPage() {
               </div>
               <h2>Informazioni</h2>
               <p>{facility.description}</p>
+              <h2>Durata minima di prenotazione</h2>
+              <p>{facility.minBookingDurationMinutes} minuti</p>
             </div>
           </article>
         )}

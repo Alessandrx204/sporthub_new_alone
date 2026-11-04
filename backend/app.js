@@ -14,7 +14,8 @@ function createApp(db) {
 
   app.get('/facilities', (request, response) => {
     const rows = db.prepare(`
-      SELECT id, name, type, description, indoor
+      SELECT id, name, type, description, indoor,
+        min_booking_duration_minutes AS minBookingDurationMinutes
       FROM facilities
       ORDER BY id
     `).all();
@@ -29,7 +30,8 @@ function createApp(db) {
     }
 
     const row = db.prepare(`
-      SELECT id, name, type, description, indoor
+      SELECT id, name, type, description, indoor,
+        min_booking_duration_minutes AS minBookingDurationMinutes
       FROM facilities
       WHERE id = ?
     `).get(id);

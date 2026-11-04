@@ -2,7 +2,7 @@
 
 >  **Nota importante:** Questo progetto è stato realizzato interamente in solitaria a seguito del completo abbandono da parte degli altri membri del gruppo. Dato che conosco JavaScript a mala pena e che il codice è stato scritto con il supporto massiccio di LLM, chiedo scusa per lo scarso tocco personale e se la qualità complessiva ne risente. Ho fatto del mio meglio per riuscire a portarlo a termine da sol*.
 
-SportHub è una web application iniziale per un progetto didattico di ingegneria del software. In questa versione puoi vedere gli impianti di un centro sportivo e aprire il dettaglio di ciascuno. Le prenotazioni saranno aggiunte durante il corso.
+SportHub è una web application iniziale per un progetto didattico di ingegneria del software. In questa versione puoi vedere gli impianti di un centro sportivo e aprire il dettaglio di ciascuno. Il dettaglio mostra anche la durata minima di prenotazione (Lezione 3). Le prenotazioni saranno aggiunte durante il corso.
 
 ## Requisiti e installazione
 
@@ -60,7 +60,7 @@ npm test
 npm run build:frontend
 ```
 
-I due test in `tests/` usano un database SQLite in memoria e non modificano `database/sporthub.db`. La build crea la cartella `dist/`.
+I test in `tests/` usano un database SQLite in memoria e non modificano `database/sporthub.db`. La build crea la cartella `dist/`.
 
 ## Struttura
 
@@ -69,3 +69,10 @@ I due test in `tests/` usano un database SQLite in memoria e non modificano `dat
 - `backend/`: server Express e route API.
 - `database/`: inizializzazione SQLite, reset e database locale generato all'avvio.
 - `tests/`: test automatici delle route.
+
+## Materiali e incremento corrente
+
+- [Consegne certe, ambiguità ed esempi esclusi](docs/consegne.md).
+- [Lezione 3: impatto, criteri, API, ERD e flusso](docs/lezione03.md).
+
+Il setup aggiorna anche la vecchia tabella degli impianti senza cancellare i dati. Per gli impianti personalizzati preesistenti la durata iniziale è 60 minuti.
