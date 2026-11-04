@@ -35,6 +35,7 @@ const initialFacilities = [
 ];
 
 function initializeDatabase(db) {
+  db.pragma('foreign_keys = ON');
   db.exec(`
     CREATE TABLE IF NOT EXISTS facilities (
       id INTEGER PRIMARY KEY,
@@ -58,6 +59,16 @@ function initializeDatabase(db) {
       }
     })();
   }
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS bookings (
+      id INTEGER PRIMARY KEY,
+      facility_id INTEGER NOT NULL REFERENCES facilities(id),
+      customer_name TEXT NOT NULL CHECK (length(trim(customer_name)) > 0),
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL CHECK (end_time > start_time)
+    );
+  `);
 
   const count = db.prepare('SELECT COUNT(*) AS total FROM facilities').get().total;
   if (count > 0) return;
