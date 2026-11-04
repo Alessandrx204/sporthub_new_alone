@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 
+import BookingForm from "./BookingForm.jsx";
+
 const apiUrl = "http://localhost:3000";
 
 export default function FacilityPage() {
@@ -70,6 +72,7 @@ export default function FacilityPage() {
               <p>{facility.description}</p>
               <h2>Durata minima di prenotazione</h2>
               <p>{facility.minBookingDurationMinutes} minuti</p>
+              <BookingForm key={facility.id} facility={facility} />
             </div>
           </article>
         )}

@@ -1,6 +1,6 @@
 # Lezione 4 - Specifica funzionale delle prenotazioni
 
-Stato: specifica del prossimo incremento; funzionalità non ancora implementata.
+Stato: specifica scritta prima del codice. Il successivo incremento la implementa: stato attuale e verifiche in [prenotazioni.md](prenotazioni.md).
 Fonte: L4-slide.pdf, pagine 20-21. Il template separato citato nelle slide non è fra i materiali disponibili: questo documento segue gli otto punti della pagina 20.
 
 ## 1. Richiesta iniziale
@@ -181,4 +181,4 @@ I campi Booking sono obbligatori. Le date vengono salvate in ISO UTC normalizzat
 | Test | Aggiungere i casi pianificati con DB isolati | Nessuna modifica al DB locale; suite completa superata. |
 | Documentazione | Aggiornare README, API reference ed ERD allo stato implementato, annotando differenze dalla specifica | Le istruzioni consentono di avviare e provare il flusso. |
 
-Nessun codice applicativo è modificato dalla Lezione 4. Questa specifica descrive ciò che dovrà essere implementato, non ciò che l’applicazione fa già.
+Nessun codice applicativo è stato modificato nel commit della Lezione 4. Questo documento conserva la specifica e i test pianificati di quel momento; per il successivo stato implementato vedere [prenotazioni.md](prenotazioni.md).
