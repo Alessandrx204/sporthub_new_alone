@@ -28,10 +28,20 @@ test('GET /facilities/:id restituisce il dettaglio di un impianto', async () => 
   assert.equal(response.status, 200);
   assert.equal(facility.id, 1);
   assert.equal(facility.name, 'Campo Centrale');
+  assert.equal(facility.minBookingDurationMinutes, 90);
 });
 
 test('GET /facilities/:id restituisce 404 per un impianto inesistente', async () => {
   const response = await fetch(`${apiUrl}/facilities/9999`);
 
   assert.equal(response.status, 404);
+});
+
+
+test('GET /facilities restituisce le durate minime dei quattro impianti', async () => {
+  const response = await fetch(`${apiUrl}/facilities`);
+  const facilities = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(facilities.map((facility) => facility.minBookingDurationMinutes), [90, 60, 60, 30]);
 });
