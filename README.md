@@ -2,7 +2,7 @@
 
 >  **Nota importante:** Questo progetto è stato realizzato interamente in solitaria a seguito del completo abbandono da parte degli altri membri del gruppo. Dato che conosco JavaScript a mala pena e che il codice è stato scritto con il supporto massiccio di LLM, chiedo scusa per lo scarso tocco personale e se la qualità complessiva ne risente. Ho fatto del mio meglio per riuscire a portarlo a termine da sol*.
 
-SportHub è una web application iniziale per un progetto didattico di ingegneria del software. In questa versione puoi vedere gli impianti di un centro sportivo, aprirne il dettaglio con la durata minima e prenotare l’intero impianto per un intervallo futuro. Le prenotazioni seguono la specifica della Lezione 4; il materiale della Lezione 5 non è disponibile.
+SportHub è una web application iniziale per un progetto didattico di ingegneria del software. In questa versione puoi vedere gli impianti di un centro sportivo, aprirne il dettaglio con la durata minima e prenotare un intervallo futuro: l’intero campo da calcio/tennis oppure un posto in piscina/palestra. Le prenotazioni seguono la specifica della Lezione 4 e l’evoluzione per posti della Lezione 11. Lezioni 5 e 6 non disponibili, quindi ignorate.
 
 ## Requisiti e installazione
 
@@ -44,7 +44,7 @@ Il frontend è una SPA con React Router e un unico documento `frontend/index.htm
 - `GET /facilities/:id` restituisce un impianto; un ID inesistente restituisce HTTP 404.
 - `POST /bookings` salva una prenotazione con `facilityId`, `customerName`, `startTime`, `endTime`. Il dettaglio dell’impianto contiene il form. [Contratto e regole](docs/prenotazioni.md).
 
-Il flusso è: componente React → `fetch` → backend Express → query SQLite → JSON → componente React. Le query delle route si trovano direttamente in `backend/app.js`. Le tabelle e i dati iniziali sono definiti in `database/setup.js`.
+Il flusso è: componente React → `fetch` → backend Express → query SQLite → JSON → componente React. `backend/app.js` collega controller (HTTP), service (regole) e repository (query SQLite). Le tabelle e i dati iniziali sono definiti in `database/setup.js`.
 
 Per riportare il database ai quattro impianti iniziali, ferma il backend e lancia:
 
@@ -76,6 +76,9 @@ I test in `tests/` usano un database SQLite in memoria e non modificano `databas
 - [Consegne certe, ambiguità ed esempi esclusi](docs/consegne.md).
 - [Lezione 3: impatto, criteri, API, ERD e flusso](docs/lezione03.md).
 - [Lezione 4: specifica delle prenotazioni](docs/lezione04.md).
-- [Prenotazioni: comportamento implementato, API e verifiche](docs/prenotazioni.md).
+- [Prenotazioni: primo incremento, API e verifiche](docs/prenotazioni.md).
+- [Lezione 11: prenotazioni per posti e struttura del backend](docs/lezione11.md).
+
+Piscina e palestra hanno 2 posti di esempio; calcio e tennis riservano l’intero impianto. Le capacità non sono indicate nei materiali. Ogni prenotazione, anche preesistente, conta un posto negli impianti condivisi.
 
 Il setup aggiorna anche la vecchia tabella degli impianti senza cancellare i dati. Per gli impianti personalizzati preesistenti la durata iniziale è 60 minuti.

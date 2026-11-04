@@ -1,5 +1,7 @@
 # Prenotazioni - Primo incremento funzionante
 
+Questo documento descrive il primo incremento. Per il comportamento attuale (posti condivisi e backend a tre livelli) vedere [Lezione 11](lezione11.md); input e risposta della POST rimangono invariati.
+
 Implementa la specifica di [Lezione 4](lezione04.md). Il PDF della Lezione 5 non è fra i materiali disponibili: questo incremento non presume ulteriori consegne di quella lezione.
 
 ## Come provarle
