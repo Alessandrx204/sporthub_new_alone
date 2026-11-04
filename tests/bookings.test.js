@@ -71,14 +71,14 @@ test('impianto inesistente restituisce 404 senza inserire', async () => {
 });
 
 test('rifiuta tutte le forme di sovrapposizione e accetta adiacenze e impianti diversi', async () => {
-  assert.equal((await post({ ...valid, facilityId: 4, endTime: '2030-11-10T12:00:00Z' })).status, 201);
+  assert.equal((await post({ ...valid, facilityId: 3, endTime: '2030-11-10T12:00:00Z' })).status, 201);
   for (const [start, end] of [['09:00', '11:00'], ['11:00', '13:00'], ['10:00', '12:00'], ['09:00', '13:00'], ['10:15', '11:45']]) {
-    const result = await post({ ...valid, facilityId: 4, startTime: `2030-11-10T${start}:00Z`, endTime: `2030-11-10T${end}:00Z` });
+    const result = await post({ ...valid, facilityId: 3, startTime: `2030-11-10T${start}:00Z`, endTime: `2030-11-10T${end}:00Z` });
     assert.equal(result.status, 409, `${start}-${end}`);
   }
   assert.equal(count(), 1);
   for (const [start, end] of [['09:00', '10:00'], ['12:00', '13:00']]) {
-    assert.equal((await post({ ...valid, facilityId: 4, startTime: `2030-11-10T${start}:00Z`, endTime: `2030-11-10T${end}:00Z` })).status, 201);
+    assert.equal((await post({ ...valid, facilityId: 3, startTime: `2030-11-10T${start}:00Z`, endTime: `2030-11-10T${end}:00Z` })).status, 201);
   }
   assert.equal((await post(valid)).status, 201);
   assert.equal(count(), 4);
@@ -131,4 +131,35 @@ test('le prenotazioni sopravvivono al riavvio e le foreign key impediscono rifer
     if (fileDb?.open) fileDb.close();
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+
+test('piscina e palestra permettono due posti e rifiutano il terzo', async () => {
+  for (const facilityId of [2, 4]) {
+    assert.equal((await post({ ...valid, facilityId })).status, 201);
+    assert.equal((await post({ ...valid, facilityId, customerName: 'Luigi' })).status, 201);
+    const full = await post({ ...valid, facilityId, customerName: 'Anna' });
+    assert.equal(full.status, 409);
+    assert.match(full.body.error, /posti disponibili/);
+  }
+  assert.equal(count(), 4);
+});
+
+test('la capienza dipende dai posti simultanei e non dalla somma degli intervalli adiacenti', async () => {
+  for (const [start, end] of [['10:00', '11:00'], ['11:00', '12:00']]) {
+    assert.equal((await post({ ...valid, facilityId: 4, startTime: `2030-11-10T${start}:00Z`, endTime: `2030-11-10T${end}:00Z` })).status, 201);
+  }
+  assert.equal((await post({ ...valid, facilityId: 4, endTime: '2030-11-10T12:00:00Z' })).status, 201);
+  assert.equal((await post({ ...valid, facilityId: 4, startTime: '2030-11-10T11:00:00Z', endTime: '2030-11-10T12:00:00Z' })).status, 409);
+  assert.equal(count(), 3);
+});
+
+test('due richieste parallele per l’ultimo posto non superano la capienza', async () => {
+  assert.equal((await post({ ...valid, facilityId: 4 })).status, 201);
+  const results = await Promise.all([
+    post({ ...valid, facilityId: 4, customerName: 'Anna' }),
+    post({ ...valid, facilityId: 4, customerName: 'Luigi' })
+  ]);
+  assert.deepEqual(results.map((r) => r.status).sort(), [201, 409]);
+  assert.equal(count(), 2);
 });

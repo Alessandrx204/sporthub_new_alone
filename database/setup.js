@@ -9,28 +9,32 @@ const initialFacilities = [
     type: 'calcio',
     description: 'Campo all’aperto per partite e allenamenti di calcio.',
     indoor: 0,
-    min_booking_duration_minutes: 90
+    min_booking_duration_minutes: 90,
+    capacity: 1
   },
   {
     name: 'Palestra Nord',
     type: 'basket',
     description: 'Palestra coperta con campo da basket e tribuna.',
     indoor: 1,
-    min_booking_duration_minutes: 60
+    min_booking_duration_minutes: 60,
+    capacity: 2
   },
   {
     name: 'Campo Tennis',
     type: 'tennis',
     description: 'Campo all’aperto per partite singole e in doppio.',
     indoor: 0,
-    min_booking_duration_minutes: 60
+    min_booking_duration_minutes: 60,
+    capacity: 1
   },
   {
     name: 'Piscina Coperta',
     type: 'nuoto',
     description: 'Piscina interna dedicata al nuoto libero e ai corsi.',
     indoor: 1,
-    min_booking_duration_minutes: 30
+    min_booking_duration_minutes: 30,
+    capacity: 2
   }
 ];
 
@@ -43,7 +47,8 @@ function initializeDatabase(db) {
       type TEXT NOT NULL CHECK (type IN ('calcio', 'basket', 'tennis', 'pallavolo', 'nuoto')),
       description TEXT NOT NULL,
       indoor INTEGER NOT NULL CHECK (indoor IN (0, 1)),
-      min_booking_duration_minutes INTEGER NOT NULL DEFAULT 60 CHECK (min_booking_duration_minutes > 0)
+      min_booking_duration_minutes INTEGER NOT NULL DEFAULT 60 CHECK (min_booking_duration_minutes > 0),
+      capacity INTEGER NOT NULL DEFAULT 1 CHECK (capacity > 0)
     );
   `);
 
@@ -57,6 +62,14 @@ function initializeDatabase(db) {
       for (const facility of initialFacilities) {
         update.run(facility.min_booking_duration_minutes, facility.name);
       }
+    })();
+  }
+
+  if (!columns.some((column) => column.name === 'capacity')) {
+    db.transaction(() => {
+      db.exec('ALTER TABLE facilities ADD COLUMN capacity INTEGER NOT NULL DEFAULT 1 CHECK (capacity > 0)');
+      // Nei DB già avviati manteniamo i dati e aggiorniamo solo i due impianti noti.
+      db.prepare("UPDATE facilities SET capacity = 2 WHERE name IN ('Palestra Nord', 'Piscina Coperta')").run();
     })();
   }
 
@@ -74,8 +87,8 @@ function initializeDatabase(db) {
   if (count > 0) return;
 
   const insert = db.prepare(`
-    INSERT INTO facilities (name, type, description, indoor, min_booking_duration_minutes)
-    VALUES (@name, @type, @description, @indoor, @min_booking_duration_minutes)
+    INSERT INTO facilities (name, type, description, indoor, min_booking_duration_minutes, capacity)
+    VALUES (@name, @type, @description, @indoor, @min_booking_duration_minutes, @capacity)
   `);
   const seed = db.transaction(() => {
     for (const facility of initialFacilities) insert.run(facility);

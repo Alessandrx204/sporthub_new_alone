@@ -29,6 +29,7 @@ test('GET /facilities/:id restituisce il dettaglio di un impianto', async () => 
   assert.equal(facility.id, 1);
   assert.equal(facility.name, 'Campo Centrale');
   assert.equal(facility.minBookingDurationMinutes, 90);
+  assert.equal(facility.capacity, 1);
 });
 
 test('GET /facilities/:id restituisce 404 per un impianto inesistente', async () => {
@@ -44,4 +45,5 @@ test('GET /facilities restituisce le durate minime dei quattro impianti', async 
 
   assert.equal(response.status, 200);
   assert.deepEqual(facilities.map((facility) => facility.minBookingDurationMinutes), [90, 60, 60, 30]);
+  assert.deepEqual(facilities.map((facility) => facility.capacity), [1, 2, 1, 2]);
 });

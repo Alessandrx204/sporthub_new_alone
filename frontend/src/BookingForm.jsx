@@ -45,7 +45,7 @@ export default function BookingForm({ facility }) {
   return (
     <section aria-labelledby="booking-title">
       <h2 id="booking-title">Prenota l’impianto</h2>
-      <p>Riservi l’intero impianto. Gli orari sono quelli locali del tuo dispositivo.</p>
+      <p>{facility.capacity > 1 ? `Riservi un posto. Capienza: ${facility.capacity} posti.` : "Riservi l’intero impianto."} Gli orari sono quelli locali del tuo dispositivo.</p>
       <form onSubmit={book}>
         <fieldset disabled={sending}>
           <legend>Dati della prenotazione</legend>
