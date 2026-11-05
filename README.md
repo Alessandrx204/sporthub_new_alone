@@ -1,7 +1,5 @@
 # SportHub
 
-
-
 ## Requisiti e installazione
 
 Serve Node.js 20.19+ (serie 20), 22 o 24. Dalla directory principale del progetto:
@@ -40,8 +38,9 @@ Il frontend è una SPA con React Router e un unico documento `frontend/index.htm
 
 - `GET /facilities` restituisce l'elenco degli impianti.
 - `GET /facilities/:id` restituisce un impianto; un ID inesistente restituisce HTTP 404.
+- `POST /bookings` salva una prenotazione con `facilityId`, `customerName`, `startTime`, `endTime`. Il dettaglio dell’impianto contiene il form. [Contratto e regole](docs/prenotazioni.md).
 
-Il flusso è: componente React → `fetch` → backend Express → query SQLite → JSON → componente React. Le query delle route si trovano direttamente in `backend/app.js`. La tabella e i dati iniziali sono definiti in `database/setup.js`.
+Il flusso è: componente React → `fetch` → backend Express → query SQLite → JSON → componente React. `backend/app.js` collega controller (HTTP), service (regole) e repository (query SQLite). Le tabelle e i dati iniziali sono definiti in `database/setup.js`.
 
 Per riportare il database ai quattro impianti iniziali, ferma il backend e lancia:
 
@@ -49,7 +48,7 @@ Per riportare il database ai quattro impianti iniziali, ferma il backend e lanci
 npm run db:reset
 ```
 
-**Attenzione:** il comando elimina tutti i dati presenti nella tabella `facilities` prima di ricrearla.
+**Attenzione:** il comando elimina tutte le prenotazioni e tutti gli impianti, poi ricrea i quattro impianti iniziali. Non usarlo per aggiornare un database di cui vuoi conservare i dati.
 
 ## Test e build
 
@@ -72,6 +71,14 @@ I test in `tests/` usano un database SQLite in memoria e non modificano `databas
 
 - [Consegne certe, ambiguità ed esempi esclusi](docs/consegne.md).
 - [Lezione 3: impatto, criteri, API, ERD e flusso](docs/lezione03.md).
-- [Lezione 4: specifica delle prenotazioni, ancora da implementare](docs/lezione04.md).
+- [Lezione 4: specifica delle prenotazioni](docs/lezione04.md).
+- [Prenotazioni: primo incremento, API e verifiche](docs/prenotazioni.md).
+- [Lezione 11: prenotazioni per posti e struttura del backend](docs/lezione11.md).
+
+Piscina e palestra hanno 2 posti di esempio; calcio e tennis riservano l’intero impianto. Le capacità non sono indicate nei materiali. Ogni prenotazione, anche preesistente, conta un posto negli impianti condivisi.
 
 Il setup aggiorna anche la vecchia tabella degli impianti senza cancellare i dati. Per gli impianti personalizzati preesistenti la durata iniziale è 60 minuti.
+
+## Lezione 14
+
+`npm run db:migrate` applica le migrazioni mancanti e mostra `SKIP` per quelle già registrate. Anche `npm run db:setup` e l'avvio del backend aggiornano lo schema. Il campo `active` parte da 1 per tutti gli impianti e compare nelle GET degli impianti. Con `active = 0`, una nuova prenotazione riceve HTTP 409. Le prenotazioni esistenti restano consultabili nella tabella `bookings`.

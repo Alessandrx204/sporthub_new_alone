@@ -7,6 +7,8 @@
     "start:backend": "node --env-file-if-exists=.env backend/server.js",
     "start:frontend": "vite",
     "build:frontend": "vite build",
+    "db:setup": "node database/setup.js",
+    "db:migrate": "node database/setup.js",
     "db:reset": "node database/reset.js",
     "test": "node --test tests/*.test.js"
   },
