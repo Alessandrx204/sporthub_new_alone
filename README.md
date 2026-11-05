@@ -1,9 +1,5 @@
 # SportHub
 
->  **Nota importante:** Questo progetto è stato realizzato interamente in solitaria a seguito del completo abbandono da parte degli altri membri del gruppo. Dato che conosco JavaScript a mala pena e che il codice è stato scritto con il supporto massiccio di LLM, chiedo scusa per lo scarso tocco personale e se la qualità complessiva ne risente. Ho fatto del mio meglio per riuscire a portarlo a termine da sol*.
-
-SportHub è una web application iniziale per un progetto didattico di ingegneria del software. In questa versione puoi vedere gli impianti di un centro sportivo, aprirne il dettaglio con la durata minima e prenotare un intervallo futuro: l’intero campo da calcio/tennis oppure un posto in piscina/palestra. Le prenotazioni seguono la specifica della Lezione 4 e l’evoluzione per posti della Lezione 11. Lezioni 5 e 6 non disponibili, quindi ignorate.
-
 ## Requisiti e installazione
 
 Serve Node.js 20.19+ (serie 20), 22 o 24. Dalla directory principale del progetto:
