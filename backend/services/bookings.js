@@ -51,6 +51,7 @@ function createBookingService(facilities, bookings, now = Date.now) {
       return bookings.transaction(() => {
         const facility = facilities.findById(facilityId);
         if (!facility) fail(404, 'Impianto non trovato.');
+        if (facility.active === 0) fail(409, 'Impianto inattivo.');
         if (start <= now()) fail(400, 'Scegli un inizio futuro.');
         if ((end - start) / 60000 < facility.minBookingDurationMinutes) {
           fail(400, `La durata minima è ${facility.minBookingDurationMinutes} minuti.`);

@@ -82,3 +82,7 @@ I test in `tests/` usano un database SQLite in memoria e non modificano `databas
 Piscina e palestra hanno 2 posti di esempio; calcio e tennis riservano l’intero impianto. Le capacità non sono indicate nei materiali. Ogni prenotazione, anche preesistente, conta un posto negli impianti condivisi.
 
 Il setup aggiorna anche la vecchia tabella degli impianti senza cancellare i dati. Per gli impianti personalizzati preesistenti la durata iniziale è 60 minuti.
+
+## Lezione 14
+
+`npm run db:migrate` applica le migrazioni mancanti e mostra `SKIP` per quelle già registrate. Anche `npm run db:setup` e l'avvio del backend aggiornano lo schema. Il campo `active` parte da 1 per tutti gli impianti e compare nelle GET degli impianti. Con `active = 0`, una nuova prenotazione riceve HTTP 409. Le prenotazioni esistenti restano consultabili nella tabella `bookings`.

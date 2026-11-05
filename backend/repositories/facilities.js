@@ -3,7 +3,7 @@ function toFacility(row) {
 }
 
 function createFacilitiesRepository(db) {
-  const fields = `id, name, type, description, indoor, capacity,
+  const fields = `id, name, type, description, indoor, capacity, active,
     min_booking_duration_minutes AS minBookingDurationMinutes`;
   return {
     findAll() {

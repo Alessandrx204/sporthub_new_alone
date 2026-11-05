@@ -18,7 +18,7 @@ test('aggiorna il vecchio database conservando gli impianti e non sovrascrive le
     initializeDatabase(db);
     assert.deepEqual(db.prepare('SELECT * FROM facilities WHERE id = 17').get(), {
       id: 17, name: 'Campo Centrale', type: 'calcio', description: 'Descrizione esistente',
-      indoor: 0, min_booking_duration_minutes: 90, capacity: 1
+      indoor: 0, min_booking_duration_minutes: 90, capacity: 1, active: 1
     });
     assert.equal(db.prepare('SELECT min_booking_duration_minutes AS duration FROM facilities WHERE id = 18').get().duration, 60);
     db.prepare('UPDATE facilities SET min_booking_duration_minutes = 120 WHERE id = 17').run();

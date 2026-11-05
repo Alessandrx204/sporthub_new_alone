@@ -1,5 +1,6 @@
 const path = require('node:path');
 const Database = require('better-sqlite3');
+const { migrate } = require('./migrate');
 
 const databasePath = path.join(__dirname, 'sporthub.db');
 
@@ -38,7 +39,7 @@ const initialFacilities = [
   }
 ];
 
-function initializeDatabase(db) {
+function initializeDatabase(db, log) {
   db.pragma('foreign_keys = ON');
   db.exec(`
     CREATE TABLE IF NOT EXISTS facilities (
@@ -83,6 +84,8 @@ function initializeDatabase(db) {
     );
   `);
 
+  migrate(db, log);
+
   const count = db.prepare('SELECT COUNT(*) AS total FROM facilities').get().total;
   if (count > 0) return;
 
@@ -101,3 +104,12 @@ function openDatabase() {
 }
 
 module.exports = { databasePath, initializeDatabase, openDatabase };
+
+if (require.main === module) {
+  const db = openDatabase();
+  try {
+    initializeDatabase(db, console.log);
+  } finally {
+    db.close();
+  }
+}
