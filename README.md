@@ -1,8 +1,6 @@
 # SportHub
 
->  **Nota importante:** Questo progetto è stato realizzato interamente in solitaria a seguito del completo abbandono da parte degli altri membri del gruppo. Dato che conosco JavaScript a mala pena e che il codice è stato scritto con il supporto massiccio di LLM, chiedo scusa per lo scarso tocco personale e se la qualità complessiva ne risente. Ho fatto del mio meglio per riuscire a portarlo a termine da sol*.
 
-SportHub è una web application iniziale per un progetto didattico di ingegneria del software. In questa versione puoi vedere gli impianti di un centro sportivo e aprire il dettaglio di ciascuno. Il dettaglio mostra anche la durata minima di prenotazione (Lezione 3). Le prenotazioni saranno aggiunte durante il corso.
 
 ## Requisiti e installazione
 
