@@ -34,18 +34,20 @@ function hasSpace(bookings, capacity) {
 
 function createBookingService(facilities, bookings, now = Date.now) {
   return {
-    create(input) {
-      const { facilityId, customerName, startTime, endTime } = input || {};
+    list(identity) {
+      return bookings.findByUserId(identity.userId);
+    },
+    create(input, identity) {
+      const { facilityId, startTime, endTime } = input || {};
       const start = parseTime(startTime);
       const end = parseTime(endTime);
       if (!Number.isSafeInteger(facilityId) || facilityId < 1 ||
-          typeof customerName !== 'string' || !customerName.trim() ||
           !Number.isFinite(start) || !Number.isFinite(end)) {
-        fail(400, 'Inserisci impianto, nome e date valide con fuso orario.');
+        fail(400, 'Inserisci impianto e date valide con fuso orario.');
       }
       if (end <= start) fail(400, 'La fine deve essere successiva all’inizio.');
       const booking = {
-        facilityId, customerName: customerName.trim(),
+        facilityId, userId: identity.userId, customerName: identity.displayName,
         startTime: new Date(start).toISOString(), endTime: new Date(end).toISOString()
       };
       return bookings.transaction(() => {

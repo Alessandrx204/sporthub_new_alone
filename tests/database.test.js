@@ -45,11 +45,11 @@ test('aggiunge capacity conservando prenotazioni e non la sovrascrive al secondo
     const booking = db.prepare('SELECT * FROM bookings').get();
     initializeDatabase(db);
     assert.equal(db.prepare('SELECT capacity FROM facilities WHERE id = 4').get().capacity, 2);
-    assert.deepEqual(db.prepare('SELECT * FROM bookings').get(), booking);
+    assert.deepEqual(db.prepare('SELECT * FROM bookings').get(), { ...booking, userId: null });
     db.prepare('UPDATE facilities SET capacity = 3 WHERE id = 4').run();
     initializeDatabase(db);
     assert.equal(db.prepare('SELECT capacity FROM facilities WHERE id = 4').get().capacity, 3);
-    assert.deepEqual(db.prepare('SELECT * FROM bookings').get(), booking);
+    assert.deepEqual(db.prepare('SELECT * FROM bookings').get(), { ...booking, userId: null });
   } finally {
     db.close();
   }

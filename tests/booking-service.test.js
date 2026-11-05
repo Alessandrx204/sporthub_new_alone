@@ -13,5 +13,5 @@ test('il service rifiuta la durata insufficiente senza Express né SQLite', () =
   assert.throws(() => service.create({
     facilityId: 1, customerName: 'Mario',
     startTime: '2030-11-10T10:00:00Z', endTime: '2030-11-10T11:00:00Z'
-  }), (error) => error.status === 400 && /90 minuti/.test(error.message));
+  }, { userId: 1, displayName: 'Mario' }), (error) => error.status === 400 && /90 minuti/.test(error.message));
 });

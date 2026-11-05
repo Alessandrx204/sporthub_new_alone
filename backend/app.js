@@ -1,4 +1,6 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const { createRequireAuth } = require('./require-auth');
 const { createFacilitiesRepository } = require('./repositories/facilities');
 const { createBookingsRepository } = require('./repositories/bookings');
 const { createFacilityService } = require('./services/facilities');
@@ -27,13 +29,18 @@ function createApp(db, now = Date.now) {
   const facilityController = createFacilityController(createFacilityService(facilities));
   const bookingController = createBookingController(createBookingService(facilities, bookings, now));
 
-  const auth = createAuthController(createAuthService(createUsersRepository(db), process.env.JWT_SECRET));
+  app.use(cookieParser());
+  const authService = createAuthService(createUsersRepository(db), process.env.JWT_SECRET);
+  const auth = createAuthController(authService);
+  const requireAuth = createRequireAuth(authService);
+  app.get('/me', requireAuth, auth.me);
   app.post('/auth/register', auth.register);
   app.post('/auth/login', auth.login);
 
   app.get('/facilities', facilityController.list);
   app.get('/facilities/:id', facilityController.detail);
-  app.post('/bookings', bookingController.create);
+  app.post('/bookings', requireAuth, bookingController.create);
+  app.get('/bookings', requireAuth, bookingController.list);
 
   app.use((error, request, response, next) => {
     if (error.type === 'entity.parse.failed') {

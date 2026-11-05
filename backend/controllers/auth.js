@@ -1,5 +1,9 @@
 function createAuthController(service) {
   return {
+    me(request, response) {
+      const { userId, email, displayName } = request.auth;
+      response.json({ id: userId, email, displayName });
+    },
     async register(request, response) {
       response.status(201).json(await service.register(request.body));
     },

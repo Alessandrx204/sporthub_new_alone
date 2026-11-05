@@ -27,6 +27,20 @@ function createAuthService(users, jwtSecret) {
         throw error;
       }
     },
+    authenticateToken(token) {
+      if (!token || !jwtSecret) return null;
+      let payload;
+      try {
+        payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
+      } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) return null;
+        throw error;
+      }
+      if (typeof payload?.sub !== 'string' || !/^[1-9]\d*$/.test(payload.sub)) return null;
+      const userId = Number(payload.sub);
+      if (!Number.isSafeInteger(userId) || userId <= 0 || !Number.isFinite(payload.exp)) return null;
+      return users.findById(userId);
+    },
     async login(input) {
       const { email, password } = credentials(input);
       const user = users.findByEmail(email);

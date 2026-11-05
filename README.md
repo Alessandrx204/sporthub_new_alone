@@ -38,7 +38,7 @@ Il frontend è una SPA con React Router e un unico documento `frontend/index.htm
 
 - `GET /facilities` restituisce l'elenco degli impianti.
 - `GET /facilities/:id` restituisce un impianto; un ID inesistente restituisce HTTP 404.
-- `POST /bookings` salva una prenotazione con `facilityId`, `customerName`, `startTime`, `endTime`. Il dettaglio dell’impianto contiene il form. [Contratto e regole](docs/prenotazioni.md).
+- `POST /bookings` richiede il cookie di login e salva una prenotazione con `facilityId`, `startTime` e `endTime`. [Contratto e regole](docs/prenotazioni.md).
 
 Il flusso è: componente React → `fetch` → backend Express → query SQLite → JSON → componente React. `backend/app.js` collega controller (HTTP), service (regole) e repository (query SQLite). Le tabelle e i dati iniziali sono definiti in `database/setup.js`.
 
@@ -90,4 +90,15 @@ Imposta `JWT_SECRET` in `.env` con un valore casuale lungo. Puoi generarlo con `
 - `POST /auth/register` riceve JSON con `email`, `displayName` e `password`. Risponde 201 con i dati pubblici, 400 per input non valido e 409 per email duplicata.
 - `POST /auth/login` riceve JSON con `email` e `password`. Risponde 200 e imposta il cookie `auth_token` per un'ora. Credenziali errate ricevono 401 e input non valido riceve 400.
 
-Usa Thunder Client o curl con `Content-Type: application/json`. Nella risposta del login controlla l'header `Set-Cookie`. L'email viene normalizzata e Argon2id protegge la password. Il JWT firmato con HS256 contiene l'ID utente come `sub` e arriva nel cookie HttpOnly. Le API di prenotazione restano quelle della Lezione 14.
+Usa Thunder Client o curl con `Content-Type: application/json`. Nella risposta del login controlla l'header `Set-Cookie`. L'email viene normalizzata e Argon2id protegge la password. Il JWT firmato con HS256 contiene l'ID utente come `sub` e arriva nel cookie HttpOnly.
+
+
+## Lezione 18
+
+Configura `JWT_SECRET`, avvia il backend e usa Thunder Client o curl. Registra un account, esegui il login e invia il cookie `auth_token` con le richieste successive.
+
+- `GET /me` restituisce il profilo pubblico dell’account.
+- `POST /bookings` assegna la prenotazione all’account riconosciuto dal cookie. Il nome viene dal profilo.
+- `GET /bookings` restituisce le prenotazioni di quell’account.
+
+Le tre rotte rispondono 401 se il cookie manca o il token non è valido. Le prenotazioni storiche restano nel database con `userId` nullo. La Lezione 18 si prova via API. Il form React della versione precedente richiede una futura integrazione con il login.

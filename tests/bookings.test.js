@@ -7,19 +7,23 @@ const path = require('node:path');
 const { createApp } = require('../backend/app');
 const { initializeDatabase } = require('../database/setup');
 
+const jwt = require('jsonwebtoken');
+process.env.JWT_SECRET = 'test-only-secret';
+const cookie = (id) => 'auth_token=' + jwt.sign({}, process.env.JWT_SECRET, { subject: String(id), expiresIn: '1h' });
 let db, server, apiUrl;
 const currentTime = Date.parse('2030-11-09T09:00:00Z');
-const valid = { facilityId: 1, customerName: ' Mario ', startTime: '2030-11-10T10:00:00Z', endTime: '2030-11-10T11:30:00Z' };
+const valid = { facilityId: 1, startTime: '2030-11-10T10:00:00Z', endTime: '2030-11-10T11:30:00Z' };
 const count = () => db.prepare('SELECT COUNT(*) AS total FROM bookings').get().total;
-async function post(data) {
+async function post(data, auth = cookie(1)) {
   const response = await fetch(`${apiUrl}/bookings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: auth }, body: JSON.stringify(data)
   });
   return { status: response.status, body: await response.json() };
 }
 before(async () => {
   db = new Database(':memory:');
   initializeDatabase(db);
+  db.exec("INSERT INTO users VALUES (1, 'mario@example.com', 'Mario', 'test'), (2, 'alice@example.com', 'Alice', 'test')");
   server = createApp(db, () => currentTime).listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
   apiUrl = `http://127.0.0.1:${server.address().port}`;
@@ -33,16 +37,15 @@ after(async () => {
 test('salva la durata esatta minima, normalizza nome e fuso, restituisce i dati salvati', async () => {
   const result = await post({ ...valid, startTime: '2030-11-10T11:00:00+01:00' });
   assert.equal(result.status, 201);
-  assert.deepEqual(result.body, { id: result.body.id, ...valid, customerName: 'Mario', startTime: '2030-11-10T10:00:00.000Z', endTime: '2030-11-10T11:30:00.000Z' });
+  assert.deepEqual(result.body, { id: result.body.id, ...valid, customerName: 'Mario', userId: 1, startTime: '2030-11-10T10:00:00.000Z', endTime: '2030-11-10T11:30:00.000Z' });
   assert.deepEqual(db.prepare('SELECT * FROM bookings').get(), {
-    id: result.body.id, facility_id: 1, customer_name: 'Mario',
+    id: result.body.id, facility_id: 1, customer_name: 'Mario', userId: 1,
     start_time: result.body.startTime, end_time: result.body.endTime
   });
 });
 
 test('rifiuta campi mancanti, input malformati e date impossibili senza creare righe', async () => {
   const inputs = [null, [], { ...valid, facilityId: '1' }, { ...valid, facilityId: -1 },
-    { ...valid, customerName: '  ' }, { ...valid, customerName: 42 },
     { ...valid, startTime: '2030-11-10T10:00:00' },
     { ...valid, startTime: '2030-02-30T10:00:00Z' },
     { ...valid, startTime: '2030-11-10T25:00:00Z' },
@@ -162,4 +165,29 @@ test('due richieste parallele per l’ultimo posto non superano la capienza', as
   ]);
   assert.deepEqual(results.map((r) => r.status).sort(), [201, 409]);
   assert.equal(count(), 2);
+});
+
+test('protegge le prenotazioni e mostra a ogni account soltanto le proprie', async () => {
+  const get = (route, auth) => fetch(apiUrl + route, { headers: { Cookie: auth } });
+  assert.equal((await post(valid, '')).status, 401);
+  assert.equal((await get('/bookings', '')).status, 401);
+  assert.equal((await get('/me', cookie(99))).status, 401);
+  assert.equal((await get('/me', cookie(1) + 'x')).status, 401);
+  const expired = jwt.sign({}, process.env.JWT_SECRET, { subject: '1', expiresIn: -1 });
+  assert.equal((await get('/me', 'auth_token=' + expired)).status, 401);
+  assert.deepEqual(await (await get('/me', cookie(1))).json(), {
+    id: 1, email: 'mario@example.com', displayName: 'Mario'
+  });
+  assert.deepEqual(await (await get('/bookings', cookie(2))).json(), []);
+  db.prepare('INSERT INTO bookings (facility_id, customer_name, start_time, end_time) VALUES (3, ?, ?, ?)')
+    .run('Mario', valid.startTime, valid.endTime);
+  const mario = await post({ ...valid, userId: 2, customerName: 'Alice' });
+  const alice = await post({ ...valid, facilityId: 2 }, cookie(2));
+  assert.equal(mario.status, 201);
+  assert.equal(alice.status, 201);
+  assert.equal(mario.body.userId, 1);
+  assert.equal(mario.body.customerName, 'Mario');
+  assert.deepEqual(await (await get('/bookings', cookie(1))).json(), [mario.body]);
+  assert.deepEqual(await (await get('/bookings', cookie(2))).json(), [alice.body]);
+  assert.equal(db.prepare('SELECT COUNT(*) FROM bookings WHERE userId IS NULL').pluck().get(), 1);
 });
