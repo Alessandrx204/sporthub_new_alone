@@ -13,8 +13,10 @@
     "test": "node --test tests/*.test.js"
   },
   "dependencies": {
+    "argon2": "^0.45.2",
     "better-sqlite3": "12.9.0",
     "express": "5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router": "^7.18.4"

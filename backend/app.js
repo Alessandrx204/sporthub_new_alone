@@ -6,6 +6,10 @@ const { createBookingService } = require('./services/bookings');
 const { createFacilityController } = require('./controllers/facilities');
 const { createBookingController } = require('./controllers/bookings');
 
+const { createUsersRepository } = require('./repositories/users');
+const { createAuthService } = require('./services/auth');
+const { createAuthController } = require('./controllers/auth');
+
 function createApp(db, now = Date.now) {
   const app = express();
 
@@ -22,6 +26,10 @@ function createApp(db, now = Date.now) {
   const bookings = createBookingsRepository(db);
   const facilityController = createFacilityController(createFacilityService(facilities));
   const bookingController = createBookingController(createBookingService(facilities, bookings, now));
+
+  const auth = createAuthController(createAuthService(createUsersRepository(db), process.env.JWT_SECRET));
+  app.post('/auth/register', auth.register);
+  app.post('/auth/login', auth.login);
 
   app.get('/facilities', facilityController.list);
   app.get('/facilities/:id', facilityController.detail);

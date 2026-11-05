@@ -52,7 +52,7 @@ Per riportare il database ai quattro impianti iniziali, ferma il backend e lanci
 npm run db:reset
 ```
 
-**Attenzione:** il comando elimina tutte le prenotazioni e tutti gli impianti, poi ricrea i quattro impianti iniziali. Non usarlo per aggiornare un database di cui vuoi conservare i dati.
+**Attenzione:** il comando elimina tutti gli utenti, tutte le prenotazioni e tutti gli impianti, poi ricrea i quattro impianti iniziali. Non usarlo per aggiornare un database di cui vuoi conservare i dati.
 
 ## Test e build
 
@@ -86,3 +86,12 @@ Il setup aggiorna anche la vecchia tabella degli impianti senza cancellare i dat
 ## Lezione 14
 
 `npm run db:migrate` applica le migrazioni mancanti e mostra `SKIP` per quelle già registrate. Anche `npm run db:setup` e l'avvio del backend aggiornano lo schema. Il campo `active` parte da 1 per tutti gli impianti e compare nelle GET degli impianti. Con `active = 0`, una nuova prenotazione riceve HTTP 409. Le prenotazioni esistenti restano consultabili nella tabella `bookings`.
+
+## Lezione 16
+
+Imposta `JWT_SECRET` in `.env` con un valore casuale lungo. Puoi generarlo con `openssl rand -hex 32`. Riavvia il backend dopo averlo impostato. All'avvio la migrazione 002 crea la tabella `users`.
+
+- `POST /auth/register` riceve JSON con `email`, `displayName` e `password`. Risponde 201 con i dati pubblici, 400 per input non valido e 409 per email duplicata.
+- `POST /auth/login` riceve JSON con `email` e `password`. Risponde 200 e imposta il cookie `auth_token` per un'ora. Credenziali errate ricevono 401 e input non valido riceve 400.
+
+Usa Thunder Client o curl con `Content-Type: application/json`. Nella risposta del login controlla l'header `Set-Cookie`. L'email viene normalizzata e Argon2id protegge la password. Il JWT firmato con HS256 contiene l'ID utente come `sub` e arriva nel cookie HttpOnly. Le API di prenotazione restano quelle della Lezione 14.
