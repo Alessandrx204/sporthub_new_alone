@@ -343,3 +343,5 @@ h1, h2, h3 { line-height: 1.15; letter-spacing: -.045em; }
   .nav-link { padding: .45rem .5rem; font-size: .83rem; }
   .facility-grid { grid-template-columns: 1fr; }
 }
+
+.header-content, .nav-list { flex-wrap: wrap; }

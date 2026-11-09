@@ -14,9 +14,9 @@ Per usare la configurazione locale di esempio, copia il template in `.env`:
 cp .env_template .env
 ```
 
-Il file `.env` è ignorato da Git; `.env_template` resta nel progetto come esempio. Al momento contiene solo `PORT=3000`. Lo script di avvio legge `.env` quando è presente e usa la porta 3000 anche se il file manca. Non inserire credenziali reali nel template.
+Il file `.env` è ignorato da Git; `.env_template` resta nel progetto come esempio. Contiene `PORT=3000` e il campo `JWT_SECRET` da compilare. Lo script di avvio legge `.env` quando è presente e usa la porta 3000 anche se il file manca. Non inserire credenziali reali nel template.
 
-Avvia il backend nel primo terminale:
+Genera un segreto con `openssl rand -hex 32` e incollalo dopo `JWT_SECRET=` nel file `.env`. Poi avvia il backend nel primo terminale:
 
 ```bash
 npm run start:backend
@@ -101,4 +101,17 @@ Configura `JWT_SECRET`, avvia il backend e usa Thunder Client o curl. Registra u
 - `POST /bookings` assegna la prenotazione all’account riconosciuto dal cookie. Il nome viene dal profilo.
 - `GET /bookings` restituisce le prenotazioni di quell’account.
 
-Le tre rotte rispondono 401 se il cookie manca o il token non è valido. Le prenotazioni storiche restano nel database con `userId` nullo. La Lezione 18 si prova via API. Il form React della versione precedente richiede una futura integrazione con il login.
+Le tre rotte rispondono 401 se il cookie manca o il token non è valido. Le prenotazioni storiche restano nel database con `userId` nullo. La Lezione 18 è collegata al frontend tramite le pagine Account e Le mie prenotazioni.
+
+
+## Account e prenotazioni dal sito
+
+1. Apri http://localhost:8080 e scegli Accedi, poi Crea un account.
+2. Inserisci nome, email e password. Dopo la registrazione esegui il login.
+3. Apri un impianto e prenota inserendo inizio e fine. Il nome viene dall’account autenticato.
+4. Apri Le mie prenotazioni per vedere il tuo elenco.
+5. Dalla pagina Account puoi uscire con Esci.
+
+Il browser invia il cookie HttpOnly con le richieste al backend e ripristina l’accesso ricaricando la pagina tramite GET /me. Il backend consente l’invio del cookie dall’origine locale http://localhost:8080. POST /auth/logout cancella il cookie e risponde 204.
+
+Verifiche di questo incremento con Node 22: 21 test superati e build frontend riuscita. Dal browser, su un database di prova in memoria, verificati registrazione, password errata, login, ricaricamento della pagina, prenotazione, elenco personale, uscita e secondo account con elenco vuoto.

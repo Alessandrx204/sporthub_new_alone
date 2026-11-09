@@ -17,6 +17,7 @@ function createApp(db, now = Date.now) {
 
   app.use((request, response, next) => {
     response.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+    response.set('Access-Control-Allow-Credentials', 'true');
     response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     response.set('Access-Control-Allow-Headers', 'Content-Type');
     if (request.method === 'OPTIONS') return response.sendStatus(204);
@@ -36,6 +37,7 @@ function createApp(db, now = Date.now) {
   app.get('/me', requireAuth, auth.me);
   app.post('/auth/register', auth.register);
   app.post('/auth/login', auth.login);
+  app.post('/auth/logout', auth.logout);
 
   app.get('/facilities', facilityController.list);
   app.get('/facilities/:id', facilityController.detail);

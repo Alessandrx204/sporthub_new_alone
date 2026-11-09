@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
 import HomePage from "./HomePage.jsx";
 import FacilityPage from "./FacilityPage.jsx";
 
-function Header() {
+import AccountPage from "./AccountPage.jsx";
+import BookingsPage from "./BookingsPage.jsx";
+
+function Header({ user }) {
   const { pathname, hash } = useLocation();
   const onHome = pathname === "/";
   const onCenter = onHome && hash === "#centro";
@@ -37,6 +40,8 @@ function Header() {
                 Il centro
               </Link>
             </li>
+            <li><Link className="nav-link" to="/bookings">Le mie prenotazioni</Link></li>
+            <li><Link className="nav-link" to="/account">{user ? "Account" : "Accedi"}</Link></li>
           </ul>
         </nav>
       </div>
@@ -73,6 +78,30 @@ function NotFoundPage() {
 }
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [authStatus, setAuthStatus] = useState("loading");
+
+  function clearUser() {
+    setUser(null);
+    setAuthStatus("ready");
+  }
+
+  async function loadUser() {
+    const response = await fetch("http://localhost:3000/me", { credentials: "include" });
+    if (response.status === 401) {
+      clearUser();
+      return;
+    }
+    if (!response.ok) throw new Error("Impossibile verificare l’accesso.");
+    const profile = await response.json();
+    setUser(profile);
+    setAuthStatus("ready");
+  }
+
+  useEffect(() => {
+    loadUser().catch(() => setAuthStatus("error"));
+  }, []);
+
   const { pathname, hash, key } = useLocation();
 
   // I Link cambiano URL senza ricaricare il documento: gestiamo anche lo scroll.
@@ -89,10 +118,12 @@ export default function App() {
 
   return (
     <>
-      <Header />
+      <Header user={user} />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/facilities/:id" element={<FacilityPage />} />
+        <Route path="/facilities/:id" element={<FacilityPage user={user} authStatus={authStatus} clearUser={clearUser} />} />
+        <Route path="/account" element={<AccountPage user={user} authStatus={authStatus} loadUser={loadUser} clearUser={clearUser} />} />
+        <Route path="/bookings" element={<BookingsPage user={user} authStatus={authStatus} clearUser={clearUser} />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Footer />

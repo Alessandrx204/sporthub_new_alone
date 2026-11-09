@@ -5,7 +5,7 @@ import BookingForm from "./BookingForm.jsx";
 
 const apiUrl = "http://localhost:3000";
 
-export default function FacilityPage() {
+export default function FacilityPage({ user, authStatus, clearUser }) {
   const { id } = useParams(); // questo id è legato al nome del parametro usato nel router in App.jsx
   const [facility, setFacility] = useState(null);
   const [status, setStatus] = useState("loading");
@@ -72,7 +72,7 @@ export default function FacilityPage() {
               <p>{facility.description}</p>
               <h2>Durata minima di prenotazione</h2>
               <p>{facility.minBookingDurationMinutes} minuti</p>
-              <BookingForm key={facility.id} facility={facility} />
+              <BookingForm key={`${facility.id}-${user?.id}`} facility={facility} user={user} authStatus={authStatus} clearUser={clearUser} />
             </div>
           </article>
         )}
